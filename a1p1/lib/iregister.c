@@ -15,7 +15,15 @@ void resetAll(iRegister *r)
         fprintf(stderr, "Error: A NULL pointer was given to resetBit\n");
         return;
     }
-    r->content = 0;
+    for (int i = 0; i < 32; i++) {
+        r->content &= (1 << i);
+    }
+
+    // post-condition
+    if (r->content != 0) {
+        fprintf(stderr, "Error: Failed to reset Bits\n");
+        return;
+    }
 }
 
 void resetBit(int i, iRegister *r)
