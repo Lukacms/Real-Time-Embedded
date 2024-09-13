@@ -56,7 +56,7 @@ void setAll(iRegister *r)
         return;
     }
     for (int i = 0; i < 32; i++) {
-        r->content &= (1 << i);
+        r->content |= (1 << i);
     }
 
     // post-condition NOTE: to change
