@@ -74,18 +74,20 @@ int getBit(int i, iRegister *r)
 void assignNibble(int pos, int i, iRegister *r)
 {
     iRegister s = {i};
+    int ind = 0;
 
     // pre-condition
-    if (pos <= 0 || pos > 2 || !r) {
+    if (pos < 0 || pos >= 8 || !r) {
         fprintf(stderr, "Error: wrong parameters.");
         return;
     }
-    for (int j = pos == 1 ? 0 : 8; j < 8 * pos; j++) {
-        if (getBit(j, &s) == 1) {
+    for (int j = 4 * pos; j < 4 * (pos + 1); j++) {
+        if (getBit(ind, &s) == 1) {
             setBit(j, r);
         } else {
             resetBit(j, r);
         }
+        ind++;
     }
 }
 
@@ -95,11 +97,11 @@ int getNibble(int pos, iRegister *r)
     int ind = 0;
 
     // pre-condition
-    if (pos <= 0 || pos > 2 || !r) {
+    if (pos < 0 || pos >= 8 || !r) {
         fprintf(stderr, "Error: wrong parameters.");
         return -1;
     }
-    for (int j = pos == 1 ? 0 : 8; j < 8 * pos; j++) {
+    for (int j = 4 * pos; j < 4 * (pos + 1); j++) {
         if (getBit(j, r) == 1) {
             setBit(ind, &nibble);
         } else {

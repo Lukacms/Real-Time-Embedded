@@ -94,10 +94,10 @@ void setAll(iRegister *);
  */
 int getBit(int, iRegister *);
 
-/** @brief set the first (for pos=1) or the second (for pos=2) four bits of
+/** @brief set the first (pos = 0) to eigth (pos = 7) four bits of
  * iRegsiter
  *
- * @param pos Is either the first or second byte of iRegister
+ * @param pos Between 0 and 7
  *
  * @param i The four bits to set to iRegister
  *
@@ -105,9 +105,9 @@ int getBit(int, iRegister *);
  *
  * @return void
  *
- * Pre-condition: 0 < n <= 2 and iRegister != Null
+ * Pre-condition: 0 <= n < 8 and iRegister != Null
  *
- * Post-condition: the first or second four bits of iRegister will take the
+ * Post-condition: the first to seventh four bits of iRegister will take the
  * value of the last four bits of i
  *
  * Properties:
@@ -115,18 +115,18 @@ int getBit(int, iRegister *);
  */
 void assignNibble(int, int, iRegister *);
 
-/** @brief get the first (for pos=1) or the second (for pos=2) four bits of
+/** @brief get the first (pos = 0) to eigth (pos = 7) four bits of
  * iRegister
  *
- * @param pos Is either the first or second byte of iRegister
+ * @param pos Between 0 and 7
  *
  * @param r A pointer to a memory location of a iRegister data structure.
  *
  * @return int The four bits of iRegister
  *
- * Pre-condition: 0 < n <= 2 and iRegister != Null
+ * Pre-condition: 0 <= n < 8 and iRegister != Null
  *
- * Post-condition: the return value = first or second four bits of iRegister
+ * Post-condition: the return value = first to seventh four bits of iRegister
  *
  * Properties:
  *
