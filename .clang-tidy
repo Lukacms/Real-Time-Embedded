@@ -1,5 +1,5 @@
 Checks: '
-    readability-*, -readability-implicit-bool-conversion,
+    -readability-implicit-bool-conversion,
     clang-analyzer-*, clang-analyzer-cplusplus*,
     modernize-*, -modernize-use-trailing-return-type,
     performance-unnecessary-value-param, -readability-braces-around-statements'

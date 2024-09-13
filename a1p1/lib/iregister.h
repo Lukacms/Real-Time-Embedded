@@ -97,7 +97,7 @@ int getBit(int, iRegister *);
 /** @brief set the first (for pos=1) or the second (for pos=2) four bits of
  * iRegsiter
  *
- * @param n Is either the first or second byte of iRegister
+ * @param pos Is either the first or second byte of iRegister
  *
  * @param i The four bits to set to iRegister
  *
@@ -118,7 +118,7 @@ void assignNibble(int, int, iRegister *);
 /** @brief get the first (for pos=1) or the second (for pos=2) four bits of
  * iRegister
  *
- * @param n Is either the first or second byte of iRegister
+ * @param pos Is either the first or second byte of iRegister
  *
  * @param r A pointer to a memory location of a iRegister data structure.
  *
