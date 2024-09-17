@@ -111,6 +111,7 @@ int getBit(int, iRegister *);
  * value of the last four bits of i
  *
  * Properties:
+ * assignNibble(pos, i, r) with r.content[4*pos : 4*pos+4] = i
  *
  */
 void assignNibble(int, int, iRegister *);
@@ -129,6 +130,7 @@ void assignNibble(int, int, iRegister *);
  * Post-condition: the return value = first to seventh four bits of iRegister
  *
  * Properties:
+ * result of getNibble(pos, r) = getBit(i) for 4*pos <= i < 4*pos+4
  *
  */
 int getNibble(int, iRegister *);

@@ -7,6 +7,7 @@
 #include "iregister.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void resetAll(iRegister *r)
 {
@@ -119,6 +120,7 @@ char *reg2str(iRegister r)
 
     // pre-condition
     if (!str) {
+        fprintf(stderr, "Error: malloc did not allocate memory");
         return NULL;
     }
     for (int i = 0; i < 32; i++) {
@@ -126,6 +128,11 @@ char *reg2str(iRegister r)
         str[i] = '0' + (mask ? 1 : 0);
     }
     str[32] = '\0';
+    // post-condition
+    if (strlen(str) != 32) {
+        fprintf(stderr, "Error: could not fill string");
+        return NULL;
+    }
     return str;
 }
 
