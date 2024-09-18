@@ -21,9 +21,9 @@ void nameCheck()
     uart_puts("Enter your name: ");
     for (i = 0; str[i] != '\n'; i++) {
         str[i] = uart_getc();
+        uart_puts(&str[i]);
     }
     str[i] = '\0';
-    uart_puts(str);
     print2uart("\nWelcome %s\n", str);
 }
 
