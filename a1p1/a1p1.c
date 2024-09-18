@@ -19,9 +19,8 @@ void nameCheck()
     int i = 0;
 
     uart_puts("Enter your name: ");
-    while (str[i] != '\n') {
+    for (i = 0; str[i] != '\n'; i++) {
         str[i] = uart_getc();
-        i++;
     }
     str[i] = '\0';
     uart_puts(str);
@@ -46,9 +45,8 @@ char *scan_uart()
     if (!(str = malloc(sizeof(char) * (LINE + 1))))
         return "";
     str = memset(str, '\0', LINE);
-    while (str[i] != '\n') {
+    for (i = 0; str[i] != '\n'; i++) {
         str[i] = uart_getc();
-        i++;
     }
     str[i] = '\0';
     uart_puts(str);
