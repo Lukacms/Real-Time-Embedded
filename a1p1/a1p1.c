@@ -9,6 +9,7 @@
 #include "lib/uart.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define LINE 80
 
@@ -43,6 +44,7 @@ char *scan_uart()
 
     if (!(str = malloc(sizeof(char) * (LINE + 1))))
         return "";
+    str = memset(str, '\0', LINE);
     do {
         str[i] = uart_getc();
         uart_puts(&str[i]);
