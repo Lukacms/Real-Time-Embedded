@@ -59,6 +59,7 @@ int main()
     char *get_nb = NULL;
     int inumber, inibble, ibit, ishift = 0;
     uart_init();
+    uart_clear();
     nameCheck();
 
     // scan the numbers
