@@ -16,12 +16,15 @@
 void nameCheck()
 {
     char str[LINE] = {'\0'};
+    char c = '\0';
     int i = 0;
 
     uart_puts("Enter your name: ");
-    for (i = 0; str[i] != '\n' && str[i] != '\r' && str[i] != ' '; i++) {
-        str[i] = uart_getc();
-        if (str[i] == '\n' || str[i] == '\r' || str[i] == ' ')
+    while (c != '\n' && c != '\r' && c != ' ') {
+        c = uart_getc();
+        str[i] = c;
+        i++;
+        if (c == '\n' || c == '\r' || c == ' ')
             uart_puts("toto\n");
     }
     str[i] = '\0';
@@ -42,13 +45,15 @@ void printBinary(iRegister r, int breakl)
 char *scan_uart()
 {
     char *str = NULL;
+    char c = 0;
     int i = 0;
 
     if (!(str = malloc(sizeof(char) * (LINE + 1))))
         return "";
     // str = memset(str, '\0', LINE);
-    for (i = 0; str[i] != '\n' && str[i] != '\r' && str[i] != ' '; i++) {
-        str[i] = uart_getc();
+    for (i = 0; c != '\n' && c != '\r' && c != ' '; i++) {
+        c = uart_getc();
+        str[i] = c;
     }
     str[i] = '\0';
     uart_puts(str);
