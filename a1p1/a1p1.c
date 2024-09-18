@@ -21,10 +21,11 @@ void nameCheck()
     uart_puts("Enter your name: ");
     do {
         str[i] = uart_getc();
-        uart_puts(&str[i]);
+        i++;
     } while (str[i] != '\n');
+    uart_puts(&str[i]);
     str[i] = '\0';
-    print2uart("\nWelcome %s\n", str);
+    print2uart("Welcome %s\n", str);
 }
 
 void printBinary(iRegister r, int breakl)
@@ -47,8 +48,9 @@ char *scan_uart()
     str = memset(str, '\0', LINE);
     do {
         str[i] = uart_getc();
-        uart_puts(&str[i]);
+        i++;
     } while (str[i] != '\n');
+    uart_puts(str);
     str[i] = '\0';
     return str;
 }
