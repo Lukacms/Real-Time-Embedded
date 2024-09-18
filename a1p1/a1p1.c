@@ -21,6 +21,8 @@ void nameCheck()
     uart_puts("Enter your name: ");
     for (i = 0; str[i] != '\n' && str[i] != '\r' && str[i] != ' '; i++) {
         str[i] = uart_getc();
+        if (str[i] == '\n' || str[i] == '\r' || str[i] == ' ')
+            uart_puts("toto\n");
     }
     str[i] = '\0';
     uart_puts(str);
@@ -44,7 +46,7 @@ char *scan_uart()
 
     if (!(str = malloc(sizeof(char) * (LINE + 1))))
         return "";
-    str = memset(str, '\0', LINE);
+    // str = memset(str, '\0', LINE);
     for (i = 0; str[i] != '\n' && str[i] != '\r' && str[i] != ' '; i++) {
         str[i] = uart_getc();
     }
