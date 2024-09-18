@@ -26,6 +26,7 @@
  * Modified by Wagner Morais on Sep 20 2021.
  */
 
+#include "uart.h"
 #include "rpi-base.h"
 #include "rpi-gpio.h"
 #include <stdarg.h>
@@ -102,6 +103,7 @@ char uart_getc()
     char r;
     /* wait until something is in the buffer */
     do {
+        uart_puts("aaaaaaaaaaaaaaaa");
         asm volatile("nop");
     } while (!(*AUX_MU_LSR & 0x01));
     /* read it and return */
