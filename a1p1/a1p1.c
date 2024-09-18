@@ -19,12 +19,13 @@ void nameCheck()
     int i = 0;
 
     uart_puts("Enter your name: ");
-    do {
+    while (str[i] != '\n') {
         str[i] = uart_getc();
-    } while (str[i++] != '\n');
-    uart_puts(&str[i]);
+        i++;
+    }
     str[i] = '\0';
-    print2uart("Welcome %s\n", str);
+    uart_puts(str);
+    print2uart("\nWelcome %s\n", str);
 }
 
 void printBinary(iRegister r, int breakl)
@@ -45,11 +46,12 @@ char *scan_uart()
     if (!(str = malloc(sizeof(char) * (LINE + 1))))
         return "";
     str = memset(str, '\0', LINE);
-    do {
+    while (str[i] != '\n') {
         str[i] = uart_getc();
-    } while (str[i++] != '\n');
-    uart_puts(str);
+        i++;
+    }
     str[i] = '\0';
+    uart_puts(str);
     return str;
 }
 
@@ -60,23 +62,31 @@ int main()
     int inumber, inibble, ibit, ishift = 0;
     uart_init();
     nameCheck();
+
+    // scan the numbers
     uart_puts("Enter an integer number (32-bits): ");
     get_nb = scan_uart();
     inumber = atoi(get_nb);
     free(get_nb);
-    uart_puts("Enter the bit position (0<=bit<32): ");
+    uart_puts("\nEnter the bit position (0<=bit<32): ");
     get_nb = scan_uart();
     ibit = atoi(get_nb);
     free(get_nb);
-    uart_puts("Enter the nibble position (0<=nibble<8): ");
+    uart_puts("\nEnter the nibble position (0<=nibble<8): ");
     get_nb = scan_uart();
     inibble = atoi(get_nb);
     free(get_nb);
-    uart_puts("Enter the number of bits to shift (0<bit<32): ");
-    ishift = atoi(scan_uart());
-    print2uart("You entered number %d -> ", inumber);
+    uart_puts("\nEnter the number of bits to shift (0<bit<32): ");
+    get_nb = scan_uart();
+    ishift = atoi(get_nb);
+    free(get_nb);
+
+    // print the entered values
+    print2uart("\nYou entered number %d -> ", inumber);
     printBinary((iRegister){inumber}, 1);
     print2uart("Bit: %d, nibble: %d\n", ibit, inibble);
+
+    // start operations
     r.content = inumber;
     setAll(&r);
     print2uart("setAll(&r) returned: %d -> ", r.content);
