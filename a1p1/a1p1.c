@@ -13,6 +13,9 @@
 
 #define LINE 80
 
+/**
+ * @brief get the name from the input line and display it
+ */
 void nameCheck()
 {
     char str[LINE] = {'\0'};
@@ -24,14 +27,18 @@ void nameCheck()
         c = uart_getc();
         str[i] = c;
         i++;
-        if (c == '\n' || c == '\r' || c == ' ')
-            uart_puts("toto\n");
     }
-    str[i] = '\0';
+    str[i - 1] = '\0';
     uart_puts(str);
     print2uart("\nWelcome %s\n", str);
 }
 
+/**
+ * @brief take a decimal number and print it in binary code
+ *
+ * @param r iRegister - number to print
+ * @param breakl bool - if we display a line break after
+ */
 void printBinary(iRegister r, int breakl)
 {
     char *str = reg2str(r);
@@ -42,6 +49,11 @@ void printBinary(iRegister r, int breakl)
     free(str);
 }
 
+/**
+ * @brief scan form command line
+ *
+ * @return char * - string filled from input line
+ */
 char *scan_uart()
 {
     char *str = NULL;
@@ -50,21 +62,28 @@ char *scan_uart()
 
     if (!(str = malloc(sizeof(char) * (LINE + 1))))
         return "";
-    // str = memset(str, '\0', LINE);
     for (i = 0; c != '\n' && c != '\r' && c != ' '; i++) {
         c = uart_getc();
         str[i] = c;
     }
-    str[i] = '\0';
+    str[i - 1] = '\0';
     uart_puts(str);
     return str;
 }
 
+/**
+ * @brief main function
+ *
+ * @return int - 0 on good execution
+ */
 int main()
 {
+    // variables declaration
     iRegister r = {0};
     char *get_nb = NULL;
     int inumber, inibble, ibit, ishift = 0;
+
+    // init uart communication and get user's name
     uart_init();
     uart_clear();
     nameCheck();
@@ -123,4 +142,5 @@ int main()
     shiftRight(ishift, &r);
     print2uart("shiftRight(%d, &r) returned: %d -> ", ishift, r.content);
     printBinary(r, 1);
+    return 0;
 }
