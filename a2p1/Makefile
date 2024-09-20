@@ -21,7 +21,7 @@ OCOPY	= $(CROSS)objcopy
 
 
 # CFLAGS	= -march=armv8-a -mcpu=cortex-a53 -mfpu=vfp -mfloat-abi=soft -ffunction-sections -fdata-sections -fno-common -g -std=gnu99 -Wall -Wextra -Os -Ilib -DRPI3=1 -DIOBPLUS=1
-CFLAGS	= -march=armv8-a+crc -mtune=cortex-a53 -mfpu=vfp -mfloat-abi=soft -ffunction-sections -fdata-sections -fno-common -g -std=gnu99 -Wall -Wextra -Os -Ilib -DRPI3=1 -DIOBPLUS=1
+CFLAGS	= -march=armv8-a+crc -mtune=cortex-a53 -mfpu=vfp -mfloat-abi=soft -ffunction-sections -fdata-sections -fno-common -g -std=gnu99 -Wall -Wextra -Os -Ilib -DRPI3=1 -DIOBPLUS=1 -I/usr/include/
 
 LFLAGS	= -static -nostartfiles -lc -lgcc -specs=nano.specs -Wl,--gc-sections -lm
 LSCRIPT	= lib/rpi3.ld
@@ -43,6 +43,7 @@ $(MAIN): $(ELF)
 	$(OCOPY) $< -O binary $@
 
 clean:
+	find -name '*.o' -delete
 #   OS dependent. Change accordingly
 #	del /Q /F $(MAIN) $(ELF) $(OBJS)
 #	rm -f $(MAIN) $(ELF) $(OBJS)

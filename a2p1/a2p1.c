@@ -2,7 +2,7 @@
     Modified by Wagner Morais on Sep 2023.
  */
 
-#include "lib/piface.h"
+#include "piface.h"
 #include <stdio.h>
 
 int main()
