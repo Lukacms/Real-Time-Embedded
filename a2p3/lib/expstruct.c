@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define Precision 20
+
 static int factorial(unsigned int x)
 {
     int fact = 1;
@@ -35,16 +37,16 @@ ExpStruct *iexp(int x)
         fprintf(stderr, "Error: while allocating structure");
         return NULL;
     }
-    for (; i <= x; i++, j++) {
+    for (; i <= Precision; i++, j++) {
         e->expFraction += pow(x, i) / factorial(i) * 100;
-        if (j % 2 == 0)
+        if (j % 5 == 0)
             led_toggle();
-        RPI_WaitMicroSeconds(500000);
+        RPI_WaitMicroSeconds(100000);
     }
     e->expInt = e->expFraction / 100;
     // e->expFraction %= 100;
     // if (e->expFraction < 0)
     //     e->expFraction *= -1;
-    e->expFraction = i;
+    e->expFraction = x;
     return e;
 }
