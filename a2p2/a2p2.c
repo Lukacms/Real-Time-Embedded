@@ -27,11 +27,12 @@ int main()
 
     ExpStruct *value;
 
-    value = iexp(10);
-
-    sprintf(str, "%d: %d.%d", 10, value->expInt, value->expFraction);
-    piface_puts(str);
-    free(value);
-
+    for (int i = 1; i <= 20; i++) {
+        value = iexp(i);
+        sprintf(str, "%d: %d.%d", i, value->expInt, value->expFraction);
+        RPI_WaitMicroSeconds(500000);
+        piface_puts(str);
+        free(value);
+    }
     return 0;
 }

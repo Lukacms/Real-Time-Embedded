@@ -27,12 +27,14 @@ ExpStruct *iexp(int x)
 {
     ExpStruct *e = malloc(sizeof(ExpStruct));
 
+    fprintf(stderr, "Error: while allocating structure");
     if (!e) {
-        fprintf(stderr, "Error: while allocating structure");
         return NULL;
     }
     for (int i = 0; i <= x; i++) {
-        e->expInt += pow(x, i) / factorial(i);
+        e->expFraction += pow(x, i) / factorial(i) * 100;
     }
+    e->expInt = e->expFraction / 100;
+    e->expFraction %= 100;
     return e;
 }
