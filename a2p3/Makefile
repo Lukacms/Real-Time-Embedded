@@ -5,8 +5,8 @@ MAINFILE = a2p3
 
 
 OBJS	= lib/startup.o lib/syscalls.o
-OBJS	+= lib/rpi-gpio.o lib/rpi-armtimer.o lib/rpi-interrupts.o lib/rpi-systimer.o
-#a2p1
+OBJS	+= lib/rpi-gpio.o lib/rpi-armtimer.o lib/rpi-interrupts.o lib/rpi-systimer.o lib/piface.o
+#a2p3
 OBJS	+=  lib/expstruct.o lib/led.o
 
 OBJS	+= $(MAINFILE).o
@@ -22,7 +22,7 @@ OCOPY	= $(CROSS)objcopy
 
 
 # CFLAGS	= -march=armv8-a -mcpu=cortex-a53 -mfpu=vfp -mfloat-abi=soft -ffunction-sections -fdata-sections -fno-common -g -std=gnu99 -Wall -Wextra -Os -Ilib -DRPI3=1 -DIOBPLUS=1
-CFLAGS	= -march=armv8-a+crc -mtune=cortex-a53 -mfpu=vfp -mfloat-abi=soft -ffunction-sections -fdata-sections -fno-common -g -std=gnu99 -Wall -Wextra -Os -Ilib -DRPI3=1 -DIOBPLUS=1 -I /usr/lib
+CFLAGS	= -march=armv8-a+crc -mtune=cortex-a53 -mfpu=vfp -mfloat-abi=soft -ffunction-sections -fdata-sections -fno-common -g -std=gnu99 -Wall -Wextra -Wno-unused-parameter -Os -Ilib -DRPI3=1 -DIOBPLUS=1 -I /usr/lib
 
 LFLAGS	= -static -nostartfiles -lc -lgcc -specs=nano.specs -Wl,--gc-sections -lm
 LSCRIPT	= lib/rpi3.ld
@@ -34,14 +34,14 @@ LDFLAGS	= -u _printf_float
 all: $(MAIN)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $^ -lm -lc
+	$(CC) $(CFLAGS) -c -o $@ $^
 
 $(ELF): $(OBJS)
-	$(CC) -T $(LSCRIPT) $(CFLAGS) $(LFLAGS) $(LDFLAGS) -o $@ $^
+	$(CC) -T $(LSCRIPT) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LFLAGS)
 	$(SIZE) $@
 
 $(MAIN): $(ELF)
-	$(OCOPY) $< -O binary $@ -lm
+	$(OCOPY) $< -O binary $@
 
 clean:
 #   OS dependent. Change accordingly

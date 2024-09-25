@@ -8,6 +8,8 @@
 #include "rpi-systimer.h"
 #include "rpi3.h"
 
+int toggle = 0;
+
 void led_init()
 {
     /* Write 1 to the GPIO16 init nibble in the Function Select 1 GPIO
@@ -21,6 +23,7 @@ void led_init()
 
 void led_on()
 {
+    toggle = 1;
     /* Set the GPIO16 output high ( Turn OK LED off )*/
     GPIO->GPSET0 |= (1 << 16);
 #if defined(RPI3) && defined(IOBPLUS)
@@ -33,6 +36,7 @@ void led_on()
 
 void led_off()
 {
+    toggle = 0;
     /* Set the GPIO16 output high ( Turn OK LED off )*/
     GPIO->GPCLR0 |= (1 << 16);
 #if defined(RPI3) && defined(IOBPLUS)
@@ -49,4 +53,13 @@ void led_blink()
     RPI_WaitMicroSeconds(500000);
     GPIO->GPCLR0 |= (1 << 16);
     RPI_WaitMicroSeconds(500000);
+}
+
+void led_toggle()
+{
+    if (toggle) {
+        led_off();
+    } else {
+        led_on();
+    }
 }

@@ -9,15 +9,18 @@
 
 #include "lib/expstruct.h"
 #include "lib/led.h"
+#include "lib/piface.h"
 #include "lib/rpi-systimer.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 #define LINE 32
+#define EMPTY "                "
 
 int main()
 {
 
-    // char str[LINE];
+    char str[LINE];
     led_init();
     RPI_WaitMicroSeconds(2000000);
 
@@ -27,13 +30,12 @@ int main()
     // cyclic execution
     while (1) {
         value = iexp(i++);
-        // sprintf(str,"%d: %d.%d\n", i, value->expInt, value->expFraction);
-        // piface_puts(str);
-        led_blink();
+        sprintf(str, "%d: %d.%d\n", i, value->expInt, value->expFraction);
+        piface_puts(EMPTY);
+        piface_puts(str);
         if (i >= 20)
             i = 1;
         free(value);
-        // piface_clear();
     }
     return 0;
 }

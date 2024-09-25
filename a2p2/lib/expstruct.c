@@ -36,5 +36,7 @@ ExpStruct *iexp(int x)
     }
     e->expInt = e->expFraction / 100;
     e->expFraction %= 100;
+    if (e->expFraction < 0)
+        e->expFraction *= -1;
     return e;
 }

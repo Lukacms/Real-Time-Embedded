@@ -28,19 +28,23 @@ static int factorial(unsigned int x)
 ExpStruct *iexp(int x)
 {
     ExpStruct *e = malloc(sizeof(ExpStruct));
+    static int j = 0;
+    int i = 0;
 
-    fprintf(stderr, "Error: while allocating structure");
     if (!e) {
+        fprintf(stderr, "Error: while allocating structure");
         return NULL;
     }
-    int j = 0;
-    for (int i = 0; i <= x; i++, j++) {
+    for (; i <= x; i++, j++) {
         e->expFraction += pow(x, i) / factorial(i) * 100;
-        RPI_WaitMicroSeconds(5000);
         if (j % 2 == 0)
-            led_blink();
+            led_toggle();
+        RPI_WaitMicroSeconds(500000);
     }
     e->expInt = e->expFraction / 100;
-    e->expFraction %= 100;
+    // e->expFraction %= 100;
+    // if (e->expFraction < 0)
+    //     e->expFraction *= -1;
+    e->expFraction = i;
     return e;
 }
