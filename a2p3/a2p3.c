@@ -27,7 +27,7 @@ int main()
 		value = iexp(i++);
 		// sprintf(str,"%d: %d.%d\n", i, value->expInt, value->expFraction);
 		// piface_puts(str);		
-		led_toggle();	// or led_blink();
+		led_blink();
 		if (i >= 20)
 			i = 1;
 		free(value);
