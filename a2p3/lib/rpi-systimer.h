@@ -15,7 +15,7 @@
 
 #include "rpi-base.h"
 
-#define RPI_SYSTIMER_BASE       ( PERIPHERAL_BASE + 0x3000UL )
+#define RPI_SYSTIMER_BASE (PERIPHERAL_BASE + 0x3000UL)
 
 typedef struct {
     volatile uint32_t control_status;
@@ -25,10 +25,9 @@ typedef struct {
     volatile uint32_t compare1;
     volatile uint32_t compare2;
     volatile uint32_t compare3;
-    } rpi_sys_timer_t;
+} rpi_sys_timer_t;
 
-
-extern rpi_sys_timer_t* RPI_GetSystemTimer(void);
-extern void RPI_WaitMicroSeconds( uint32_t us );
+extern rpi_sys_timer_t *RPI_GetSystemTimer(void);
+extern void RPI_WaitMicroSeconds(uint32_t us);
 
 #endif

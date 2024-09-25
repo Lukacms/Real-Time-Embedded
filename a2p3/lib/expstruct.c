@@ -8,6 +8,8 @@
  */
 
 #include "expstruct.h"
+#include "led.h"
+#include "rpi-systimer.h"
 #include <math.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -34,8 +36,9 @@ ExpStruct *iexp(int x)
     int j = 0;
     for (int i = 0; i <= x; i++, j++) {
         e->expFraction += pow(x, i) / factorial(i) * 100;
-        RPI_WaitMicroSeconds(5000);	
-        if (j % 2 == 0) led_blink();
+        RPI_WaitMicroSeconds(5000);
+        if (j % 2 == 0)
+            led_blink();
     }
     e->expInt = e->expFraction / 100;
     e->expFraction %= 100;
