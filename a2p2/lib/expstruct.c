@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define Precision 20
+
 static int factorial(unsigned int x)
 {
     int fact = 1;
@@ -31,7 +33,7 @@ ExpStruct *iexp(int x)
     if (!e) {
         return NULL;
     }
-    for (int i = 0; i <= x; i++) {
+    for (int i = 0; i <= Precision; i++) {
         e->expFraction += pow(x, i) / factorial(i) * 100;
     }
     e->expInt = e->expFraction / 100;
