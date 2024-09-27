@@ -44,9 +44,8 @@ ExpStruct *iexp(int x)
         RPI_WaitMicroSeconds(100000);
     }
     e->expInt = e->expFraction / 100;
-    // e->expFraction %= 100;
-    // if (e->expFraction < 0)
-    //     e->expFraction *= -1;
-    e->expFraction = x;
+    e->expFraction %= 100;
+    if (e->expFraction < 0)
+        e->expFraction *= -1;
     return e;
 }
