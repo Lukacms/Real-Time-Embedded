@@ -19,7 +19,7 @@ typedef struct expStruct ExpStruct;
 
 /**
  * @brief calculate the approximation of the exponential value of x using
- * Taylor's serie expansion with 2 degree of precision
+ * Taylor's serie expansion with 20 degree of precision
  *
  * method for exponential function:
  * e^n = x^0/0! + x^1/1! + x^2/2! + ... x^n/n!
