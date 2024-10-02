@@ -10,14 +10,14 @@ EXTERN (Default_Handler)
 ENTRY  (Entry)
 
 SECTIONS {
-    .ARM.exidx : {
-          __exidx_start = .;
-          *(.ARM.exidx*)
-          __exidx_end = .;
-    } > rom
+    . = 0x8000;
+    /* .ARM.exidx : { */
+    /*       __exidx_start = .; */
+    /*       *(.ARM.exidx*) */
+    /*       __exidx_end = .; */
+    /* } > rom */
 
 	/* main code */
-	. = 0x8000;
 	.text : {
 		*(.startup)
 		*(.text*)

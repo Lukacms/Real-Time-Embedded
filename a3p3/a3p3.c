@@ -50,9 +50,10 @@ void computePrimes(int seg)
 {
     for (int n = 0;; n++) {
         if (is_prime(n)) {
-            PUTTOLDC("T%d: Prime %d\n", seg, n);
-            RPI_WaitMicroSeconds(
-                500000); // delay of 0.5s added for visualization purposes!!!
+            // PUTTOLDC("T%d: Prime %d\n", seg, n);
+            print_at_seg(seg, n);
+            // delay of 0.5s added for visualization purposes!!!
+            RPI_WaitMicroSeconds(500000);
             yield();
         }
     }
@@ -65,9 +66,10 @@ void computePrimes(int seg)
 void computePower(int seg)
 {
     for (int n = 0;; n++) {
-        PUTTOLDC("T%d: %d^2=%d\n", seg, n, n * n);
-        RPI_WaitMicroSeconds(
-            500000); // delay of 0.5s added for visualization purposes!!!
+        // PUTTOLDC("T%d: %d^2=%d\n", seg, n, n * n);
+        print_at_seg(seg, n * n);
+        // delay of 0.5s added for visualization purposes!!!
+        RPI_WaitMicroSeconds(500000);
         yield();
     }
 }
@@ -89,7 +91,8 @@ void computeExponential(int seg)
 
             // If `seg` is odd, the function displays the fraction part of iexp;
             // otherwise, it displays the integer part.
-            PUTTOLDC("%d\n", seg % 2 == 0 ? value->expInt : value->expFraction);
+            print_at_seg(seg,
+                         seg % 2 == 0 ? value->expInt : value->expFraction);
 
             RPI_WaitMicroSeconds(
                 500000); // delay of 0.5s added for visualization purposes!!!
