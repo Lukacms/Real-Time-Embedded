@@ -1,0 +1,30 @@
+1. What is the purpose of the `spawn` function? How does it work?
+- `spawn` creates a new thread, initialize its parameters (function to execute, argument of the function), and put it at the end of the linked list of threads
+  a jmp_buf is created with the thread context and points to a fresh stack with the `setjmp(newp->context)`
+  the PRIMASK (1-bit mask register that blocks all exceptions) is disabled at the beginning of the function and set after the new thread is initialized at the end of the queue
+
+2. What is the purpose of the `dispatch` function? How does it work?
+- the `dispatch` function is used to change the context to the next thread given in parameter = go from one thread to another
+  note: it only jumps if the previous thread has ended, or after establishing the target to which control will later be transferred using `setjmp`. `longjmp` perform the non local goto / transfer of the execution
+
+3. What is the purpose of the `yield` function? How does it work?
+- `yield` stops the execution of the current thread, allowing a new thread to run
+  it starts by disabling the PRIMASK / blocking exception calls, then if the `readyQ` variable (threads ready to be executed) is not null, put one of them in the queue, `enqueue` it and then `dispatch`, effectively stopping the active thread. Once this is done, it enable the PRIMASK to allow for the threads to run
+
+4. When is the code `current->function(current->arg);` within the `spawn` function executed?
+- this line is executed when the `dispatch` function is called and the thread on which `spawn` has been called is the first one in the queue
+
+5. After finishing the execution of line 3, describe the content of `readyQ`.
+- after the execution of the 3rd line of the main, `readyQ` contains a null pointer, as the function of the one thread instance has been / is being executed, so the thread is either in `current` or in `freeQ` after execution
+
+6. After finishing the execution of line 3, describe the content of `freeQ`.
+- after the 3rd line, freeQ contains one element, the spawned thread that has finished the execution of its function
+
+7. Which task, i.e., computePower and computePrimes, executes first, and why?
+- the `computePrimes` function, because while `computePower` is defined first, the program need to call yield for it to starts, which is in the `computePrimes` function and not before
+
+8. Although functions `computePower` and `computePrimes` never return, they execute concurrently in the `a3p1.img` kernel. How is this achieved?
+- because after each loop iteration, `yield` is called, changing the focus from one «execution» / thread to the other
+
+9. In a hypothetical scenario where `computePower` and `computePrimes` do return, which implies that the threads assigned to execute the tasks will terminate, you may need to track which threads terminated. One approach is to keep information about the terminated threads in a list called `doneQ`. Where in `lib/tinythreads.c` would you add a thread that terminated into `doneQ`?
+- the threads would be added to `doneQ` in the function `dispatch`, when current is not null but `setjmp` returns something else than 0 ? => not sure about this one
