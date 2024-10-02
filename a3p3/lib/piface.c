@@ -293,7 +293,10 @@ void piface_set_cursor(uint8_t col, uint8_t row)
  */
 void print_at_seg(int seg, int num)
 {
-    // to be implemented
+    int col = seg % 2 == 0 ? 0 : 8;
+    int row = seg > 1 ? 1 : 0;
+    piface_set_cursor(col, row);
+    PUTTOLDC("%d", num);
 }
 
 /** @brief Similar to print_at_seg, but displays arbitrary content on a given

@@ -6,12 +6,11 @@
  */
 
 #include <stdbool.h>
-#include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "rpi-systimer.h"
 
@@ -81,7 +80,8 @@ void computePower(int seg)
  */
 void computeExponential(int seg)
 {
-    ExpStruct *value;
+    ExpStruct *value = NULL;
+
     while (1) {
         for (int n = 1; n < 20;) {
             // free(iexp(n++));
@@ -89,6 +89,7 @@ void computeExponential(int seg)
 
             // If `seg` is odd, the function displays the fraction part of iexp;
             // otherwise, it displays the integer part.
+            PUTTOLDC("%d\n", seg % 2 == 0 ? value->expInt : value->expFraction);
 
             RPI_WaitMicroSeconds(
                 500000); // delay of 0.5s added for visualization purposes!!!
