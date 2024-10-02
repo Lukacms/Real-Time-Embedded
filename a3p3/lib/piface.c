@@ -266,7 +266,11 @@ void piface_clear(void)
  */
 void piface_set_cursor(uint8_t col, uint8_t row)
 {
-    // to be implemented
+    int chars = col + row * col;
+
+    while (chars != cnt) {
+        piface_putc('\0');
+    }
 }
 
 /** @brief Displays an integer content in a given segment in the PiFace display.
@@ -296,7 +300,8 @@ void print_at_seg(int seg, int num)
     int col = seg % 2 == 0 ? 0 : 8;
     int row = seg > 1 ? 1 : 0;
     piface_set_cursor(col, row);
-    PUTTOLDC("%d", num);
+    PUTTOLDC("S%i: %d", seg, num);
+    piface_set_cursor(0, row);
 }
 
 /** @brief Similar to print_at_seg, but displays arbitrary content on a given
