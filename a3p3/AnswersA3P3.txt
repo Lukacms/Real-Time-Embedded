@@ -1,2 +1,3 @@
 Why is the last kernel not working as expected ?
 
+The kernel is not working as expected because the `main` function spawn 6 tinythread, when the defined number of threads in `tinythread.c` is 5 (line 26). The queue of functions to execute cannot handle more than 5 executions in parallel, including the «main» thread. The consequence is that some of the functions spawned will not be in the queue, and so never executed
