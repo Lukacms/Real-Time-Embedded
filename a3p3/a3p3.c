@@ -103,14 +103,13 @@ void computeExponential(int seg)
 
 int main()
 {
-
+    // NOTE: point 9 of assignement
     piface_init();
-    piface_clear();
-
-    piface_puts("DT8025 - A3P1");
+    piface_puts("DT8025 - A3P3");
     RPI_WaitMicroSeconds(2000000);
     piface_clear();
-
     spawn(computePower, 0);
-    computePrimes(1);
+    spawn(computePrimes, 1);
+    spawn(computeExponential, 2);
+    computeExponential(3);
 }
