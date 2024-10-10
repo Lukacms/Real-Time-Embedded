@@ -267,8 +267,8 @@ void piface_clear(void)
 void piface_set_cursor(uint8_t col, uint8_t row)
 {
     cnt = col + row * 16;
-    piface_puts("        ");
-    cnt = col + row * 16;
+    // piface_puts("        ");
+    // cnt = col + row * 16;
 }
 
 /** @brief Displays an integer content in a given segment in the PiFace display.

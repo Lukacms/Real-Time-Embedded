@@ -137,7 +137,7 @@ static void initializeThreads(void)
     initp.Rel_Period_Deadline = INT_MAX;
 
     for (int i = 0; i < NTHREADS; i++) {
-        initializeThread((thread *)(&threads[i]), i);
+        initializeThread(&threads[i], i);
     }
     threads[NTHREADS - 1].next = NULL;
     initialized = 1;
