@@ -1,5 +1,4 @@
-/*
-    Part of the Real-Time Embedded Systems course at Halmstad University
+/* Part of the Real-Time Embedded Systems course at Halmstad University
     Copyright (c) 2017, Sebastian Kunze <sebastian.kunze@hh.se>
     All rights reserved.
  */
@@ -24,9 +23,9 @@ static int factorial(unsigned int x)
     return fact;
 }
 
-static int ipow(int x, int power)
+static double ipow(int x, int power)
 {
-    int res = x;
+    double res = 1.0;
 
     for (int i = 0; i < power; i++) {
         res *= x;
@@ -38,12 +37,13 @@ ExpStruct *iexp(int x)
 {
     ExpStruct *e = malloc(sizeof(ExpStruct));
 
-    fprintf(stderr, "Error: while allocating structure");
     if (!e) {
+        fprintf(stderr, "Error: while allocating structure");
         return NULL;
     }
+    e->expFraction = 0;
     for (int i = 0; i <= Precision; i++) {
-        e->expFraction += ipow(x, i) / factorial(i) * 100;
+        e->expFraction += (ipow(x, i) / factorial(i)) * 100;
     }
     e->expInt = e->expFraction / 100;
     e->expFraction %= 100;

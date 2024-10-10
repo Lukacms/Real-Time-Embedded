@@ -97,6 +97,7 @@ void computeExponential(int seg)
             // delay of 0.5s added for visualization purposes!!!
             RPI_WaitMicroSeconds(500000);
             free(value);
+            yield();
         }
     }
 }

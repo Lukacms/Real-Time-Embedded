@@ -180,7 +180,7 @@ void spawn(void (*function)(int), int arg)
         current->function(current->arg);
         DISABLE();
         enqueue(current, &freeQ);
-        // current = NULL;
+        current = NULL;
         dispatch(dequeue(&readyQ));
     }
     SETSTACK(&newp->context, &newp->stack);
