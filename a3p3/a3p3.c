@@ -94,8 +94,8 @@ void computeExponential(int seg)
             print_at_seg(seg,
                          seg % 2 == 0 ? value->expInt : value->expFraction);
 
-            RPI_WaitMicroSeconds(
-                500000); // delay of 0.5s added for visualization purposes!!!
+            // delay of 0.5s added for visualization purposes!!!
+            RPI_WaitMicroSeconds(500000);
             free(value);
         }
     }

@@ -137,7 +137,7 @@ static void initializeThreads(void)
     initp.Rel_Period_Deadline = INT_MAX;
 
     for (int i = 0; i < NTHREADS; i++) {
-        initializeThread(&threads[i], i);
+        initializeThread((thread *)(&threads[i]), i);
     }
     threads[NTHREADS - 1].next = NULL;
     initialized = 1;
@@ -180,7 +180,7 @@ void spawn(void (*function)(int), int arg)
         current->function(current->arg);
         DISABLE();
         enqueue(current, &freeQ);
-        current = NULL;
+        // current = NULL;
         dispatch(dequeue(&readyQ));
     }
     SETSTACK(&newp->context, &newp->stack);
