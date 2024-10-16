@@ -1,0 +1,5 @@
+6.a) What is the purpose of the macros DISABLE() and ENABLE() ?
+  The purpose of thoses macros is to stop / restart the interrupt handler, to stop every other execution of a program from accessing the global variables.
+
+6.b) What potential issues could arise if a yield() call were injected at the least suitable location within functions like dispatch() or enqueue()? How about injecting such a call into yield() itself?
+If a yield would be called in one of theses functions, it would be called indefinitely until reaching the recursive stack limit / max recursion depth.

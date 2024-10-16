@@ -8,57 +8,59 @@
 */
 
 /*
- * Part of the code below has been developed by Johan Nordlander and Fredrik Bengtsson at LTU.
- * Part of the code has been also developed, modified and extended to ARMv8 by Wagner de Morais and Hazem Ali.
-*/
+ * Part of the code below has been developed by Johan Nordlander and Fredrik
+ * Bengtsson at LTU. Part of the code has been also developed, modified and
+ * extended to ARMv8 by Wagner de Morais and Hazem Ali.
+ */
 /*
  * Modified by Wagner Morais on Oct 2024.
-*/
+ */
 
-
-#include <string.h>
-#include <stdlib.h>
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
 
-#include "tinythreads.h"
-#include "rpi3.h"
-#include "piface.h"
 #include "expstruct.h"
+#include "piface.h"
+#include "rpi3.h"
+#include "tinythreads.h"
 
 #include "rpi-armtimer.h"
-#include "rpi-systimer.h"
 #include "rpi-interrupts.h"
+#include "rpi-systimer.h"
 
-__attribute__(( always_inline )) static inline void enable_interrupts() {
-  __asm volatile("cpsie i \n"); 
+__attribute__((always_inline)) static inline void enable_interrupts()
+{
+    __asm volatile("cpsie i \n");
 }
 
-__attribute__(( always_inline )) static inline void disable_interrupts() {
-  __asm volatile("cpsid i \n"); 
+__attribute__((always_inline)) static inline void disable_interrupts()
+{
+    __asm volatile("cpsid i \n");
 }
 
-__attribute__(( always_inline )) static inline void no_operation() {
-  __asm volatile("nop \n"); //AIF
+__attribute__((always_inline)) static inline void no_operation()
+{
+    __asm volatile("nop \n"); // AIF
 }
 
-#define DISABLE()       disable_interrupts()
-#define ENABLE()        enable_interrupts()
-#define MAXINT          0x7fffffff
-
+#define DISABLE() disable_interrupts()
+#define ENABLE() enable_interrupts()
+#define MAXINT 0x7fffffff
 
 // Mutex variable to guard critical sections
 mutex mute = MUTEX_INIT;
 
 // @brief The BCM2835 Interupt controller peripheral at it's base address
-static rpi_irq_controller_t* rpiIRQController =
-        (rpi_irq_controller_t*)RPI_INTERRUPT_CONTROLLER_BASE;
+static rpi_irq_controller_t *rpiIRQController =
+    (rpi_irq_controller_t *)RPI_INTERRUPT_CONTROLLER_BASE;
 
 // @brief Return the IRQ Controller register set
-static rpi_irq_controller_t* RPI_GetIrqController( void )
+static rpi_irq_controller_t *RPI_GetIrqController(void)
 {
     return rpiIRQController;
 }
@@ -70,55 +72,54 @@ void RPI_EnableARMTimerInterrupt(void)
 
 void initTimerInterrupts()
 {
-    RPI_EnableARMTimerInterrupt();  
+    RPI_EnableARMTimerInterrupt();
     /* Setup the system timer interrupt
        Timer frequency = Clk/256 * 0x400
-       0xF3C is about 1 second       
-	   0xF3C - 3900 - 9953 
+       0xF3C is about 1 second
+       0xF3C - 3900 - 9953
     */
     RPI_GetArmTimer()->Load = 0xF3C;
     /* Setup the ARM Timer */
-    RPI_GetArmTimer()->Control =
-            RPI_ARMTIMER_CTRL_23BIT |
-            RPI_ARMTIMER_CTRL_ENABLE |
-            RPI_ARMTIMER_CTRL_INT_ENABLE |
-            RPI_ARMTIMER_CTRL_PRESCALE_256;
+    RPI_GetArmTimer()->Control = RPI_ARMTIMER_CTRL_23BIT |
+        RPI_ARMTIMER_CTRL_ENABLE | RPI_ARMTIMER_CTRL_INT_ENABLE |
+        RPI_ARMTIMER_CTRL_PRESCALE_256;
     /* Enable interrupts! */
     ENABLE();
 }
 
 /** @brief Represents a job with an "infinite" execution time.
  */
-void computeSomethingForever(int seg) {
-    ExpStruct* value;
-	for(volatile uint32_t i=0; ; i++)
-    {
-		// exp of the 1st 9 positive integers, except 0 
-		value = iexp((i%8)+1);
-		print_at_seg(seg % 4, value->expInt);
-		// printf_at_seg(seg % 4, "S%i: %04i", seg, value->expInt);
+void computeSomethingForever(int seg)
+{
+    ExpStruct *value;
+    for (volatile uint32_t i = 0;; i++) {
+        // exp of the 1st 9 positive integers, except 0
+        value = iexp((i % 8) + 1);
+        print_at_seg(seg % 4, value->expInt);
+        // printf_at_seg(seg % 4, "S%i: %04i", seg, value->expInt);
     }
-} 
-
+}
 
 /** @brief Represents a job with a fixed-length execution time.
  */
-void computeSomething(int seg) {
-	volatile int t = ticks;
-	ExpStruct* value = iexp(10);
-	printf_at_seg(seg % 4, "S%d: %d", seg, t);
-	while(t==ticks);
-} 
+void computeSomething(int seg)
+{
+    volatile int t = ticks;
+    ExpStruct *value = iexp(10);
+    printf_at_seg(seg % 4, "S%d: %d", seg, t);
+    while (t == ticks)
+        ;
+}
 
-
-int main() {
-	piface_init();
-	piface_puts("DT8025 - A4P1");
-	RPI_WaitMicroSeconds(2000000);	
-	piface_clear();
+int main()
+{
+    piface_init();
+    piface_puts("DT8025 - A4P1");
+    RPI_WaitMicroSeconds(2000000);
+    piface_clear();
     initTimerInterrupts();
     spawn(computeSomethingForever, 0);
     spawn(computeSomethingForever, 1);
     spawn(computeSomethingForever, 2);
-    computeSomethingForever(3);	
+    computeSomethingForever(3);
 }
