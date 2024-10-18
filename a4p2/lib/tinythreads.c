@@ -249,34 +249,43 @@ static void sortX(thread *queue)
     // To be implemented in Assignment 4!!!
     thread a = queue;
     thread b = queue;
-    thread a_prev = a->next;
-    thread b_prev = b->next;
-    thread aux;
+    thread a_prev = NULL;
+    thread b_prev = NULL;
+    thread aux1;
+    thread aux2;
 
     for (int i = 0; i < NTHREADS; i++) {
         for (int j = 0; j < NTHREADS; j++) {
             if (a->Period_Deadline < b->Period_Deadline) {
+                aux1 = a_prev;
+                aux2 = b_prev;
                 //Fuck pointers
-                
+
+                shift(a, b, a_prev, b_prev);
+
+                a_prev = aux1;
+                b_prev = aux2;
+                a = a_prev->next;
+                b = b_prev->next;    
             }
+            b_prev = b;
             b = b->next;
-            b_prev = b->next;
         }
+        a_prev = a;
         a = a->next;
-        a_prev = a->next;
     }
 }
 
-static void shift(thread *a, thread *b, thread a_next, thread b_next) {
+static void shift(thread a, thread b, thread a_prev, thread b_prev) {
     thread aux;
 
     aux = a;
     a = b;
     b = aux;
 
-    aux = a->next;
-    a->next = b->next;
-    b->next = aux;
+    aux = a_prev;
+    a_prev = b_prev;
+    b_prev = aux;
 }
 
 /** @brief Removes a specific element from the queue.
