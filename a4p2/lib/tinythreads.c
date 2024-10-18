@@ -217,6 +217,27 @@ void spawnWithDeadline(void (*function)(int), int arg, unsigned int deadline,
                        unsigned int rel_deadline)
 {
     // To be implemented in Assignment 4!!!
+    thread newp;
+    DISABLE();
+    if (!initialized)
+        initialize();
+    newp = dequeue(&freeQ);
+    newp->function = function;
+    newp->arg = arg;
+    newp->next = NULL;
+    newp->Period_Deadline = deadline;
+    newp->Rel_Period_Deadline = rel_deadline;
+    if (setjmp(newp->context) == 1) {
+        ENABLE();
+        current->function(current->arg);
+        DISABLE();
+        enqueue(current, &free);
+        current = NULL;
+        dispatch(dequeue(&readyQ));
+    }
+    SETSTACK(&newp->context, &newp->stack);
+    enqueue(newp, &readyQ);
+    ENABLE();
 }
 
 /** @brief Sort the elements a given queue container by a given
@@ -226,6 +247,36 @@ void spawnWithDeadline(void (*function)(int), int arg, unsigned int deadline,
 static void sortX(thread *queue)
 {
     // To be implemented in Assignment 4!!!
+    thread a = queue;
+    thread b = queue;
+    thread a_prev = a->next;
+    thread b_prev = b->next;
+    thread aux;
+
+    for (int i = 0; i < NTHREADS; i++) {
+        for (int j = 0; j < NTHREADS; j++) {
+            if (a->Period_Deadline < b->Period_Deadline) {
+                //Fuck pointers
+                
+            }
+            b = b->next;
+            b_prev = b->next;
+        }
+        a = a->next;
+        a_prev = a->next;
+    }
+}
+
+static void shift(thread *a, thread *b, thread a_next, thread b_next) {
+    thread aux;
+
+    aux = a;
+    a = b;
+    b = aux;
+
+    aux = a->next;
+    a->next = b->next;
+    b->next = aux;
 }
 
 /** @brief Removes a specific element from the queue.
@@ -255,6 +306,9 @@ static void scheduler_RR(void)
 static void scheduler_RM(void)
 {
     // To be implemented in Assignment 4!!!
+    DISABLE();
+    respawn_periodic_tasks();
+    ENABLE();
 }
 
 /** @brief Schedules periodic tasks using Earliest Deadline First  (EDF)
@@ -272,6 +326,7 @@ static void scheduler_EDF(void)
 void scheduler(void)
 {
     // To be implemented in Assignment 4!!!
+    scheduler_RM();
 }
 
 /** @brief Prints via UART the content of the main variables in TinyThreads
