@@ -23,7 +23,7 @@ OCOPY	= $(CROSS)objcopy
 # CFLAGS	= -march=armv8-a -mcpu=cortex-a53 -mfpu=vfp -mfloat-abi=soft -ffunction-sections -fdata-sections -fno-common -g -std=gnu99 -Wall -Wextra -Os -Ilib -DRPI3=1 -DIOBPLUS=1
 CFLAGS	= -march=armv8-a+crc -mtune=cortex-a53 -mfpu=vfp -mfloat-abi=soft -ffunction-sections -fdata-sections -fno-common -g -std=gnu99 -Wall -Wextra -Os -Ilib -DRPI3=1 -DIOBPLUS=1 -Wno-unused-parameter -Wno-unused-function -Wno-format
 
-LFLAGS	= -static -nostartfiles -specs=nano.specs -Wl,--gc-sections -lm -lc -lgcc
+LFLAGS	= -static -nostartfiles --specs=nano.specs -Wl,--gc-sections -lm -lc -lgcc
 LSCRIPT	= lib/rpi3.ld
 
 LDFLAGS	+= -u _printf_float

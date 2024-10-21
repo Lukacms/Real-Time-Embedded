@@ -324,5 +324,11 @@ void print_at_seg(int seg, int num)
  */
 void printf_at_seg(int seg, const char *fmt, ...)
 {
-    // The implementation is optional.
+    int col = seg % 2 == 0 ? 0 : 8;
+    int row = seg > 1 ? 1 : 0;
+    va_list list;
+
+    va_start(list, fmt);
+    piface_set_cursor(col, row);
+    PUTTOLDC(fmt, list);
 }

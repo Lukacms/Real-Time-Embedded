@@ -117,9 +117,12 @@ int main()
     piface_puts("DT8025 - A4P1");
     RPI_WaitMicroSeconds(2000000);
     piface_clear();
+
     initTimerInterrupts();
+
     spawn(computeSomethingForever, 0);
     spawn(computeSomethingForever, 1);
     spawn(computeSomethingForever, 2);
+
     computeSomethingForever(3);
 }

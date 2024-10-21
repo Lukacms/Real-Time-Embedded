@@ -168,7 +168,7 @@ void spawn(void (*function)(int), int arg)
         ENABLE();
         current->function(current->arg);
         DISABLE();
-        enqueue(current, &free);
+        enqueue(current, &freeQ);
         current = NULL;
         dispatch(dequeue(&readyQ));
     }
@@ -199,7 +199,8 @@ void lock(mutex *m)
 {
     // To be implemented in Assignment 4!!!
     DISABLE();
-    if (!m->locked) m->locked = 1;
+    if (!m->locked)
+        m->locked = 1;
     else {
         enqueue(current, &m->waitQ);
         dispatch(dequeue(&readyQ));
@@ -216,9 +217,8 @@ void unlock(mutex *m)
     DISABLE();
     if (m->waitQ != NULL) {
         dispatch(dequeue(&m->waitQ));
-    }
-    else m->locked = 0;
-
+    } else
+        m->locked = 0;
     ENABLE();
 }
 
@@ -287,8 +287,7 @@ static void scheduler_EDF(void)
  */
 void scheduler(void)
 {
-    // NOTE: doing implementation
-    // To be implemented in Assignment 4!!!
+    printf_at_seg(0, "tututututu");
     scheduler_RR();
 }
 

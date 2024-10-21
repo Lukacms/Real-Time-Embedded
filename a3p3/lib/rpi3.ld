@@ -11,11 +11,12 @@ ENTRY  (Entry)
 
 SECTIONS {
     . = 0x8000;
-    /* .ARM.exidx : { */
-    /*       __exidx_start = .; */
-    /*       *(.ARM.exidx*) */
-    /*       __exidx_end = .; */
-    /* } > rom */
+    /* NOTE: comment the following lines if .img not doing anything */
+    .ARM.exidx : {
+          __exidx_start = .;
+          *(.ARM.exidx*)
+          __exidx_end = .;
+    }
 
 	/* main code */
 	.text : {

@@ -9,11 +9,12 @@
 */
 /*
  * Modified by Wagner de Morais on Oct 2024.
-*/
+ */
 
-#include <stdint.h>
-#include "rpi-armtimer.h"
 #include "rpi-interrupts.h"
+#include "rpi-armtimer.h"
+#include "tinythreads.h"
+#include <stdint.h>
 
 volatile int ticks = -1;
 /**
@@ -23,10 +24,7 @@ volatile int ticks = -1;
     GPU and therefore cause the GPU to start running code again until
     the ARM is handed control at the end of boot loading
 */
-void __attribute__((interrupt("ABORT"))) reset_vector(void)
-{
-
-}
+void __attribute__((interrupt("ABORT"))) reset_vector(void) {}
 
 /**
     @brief The undefined instruction interrupt handler
@@ -36,12 +34,10 @@ void __attribute__((interrupt("ABORT"))) reset_vector(void)
 */
 void __attribute__((interrupt("UNDEF"))) undefined_instruction_vector(void)
 {
-    while( 1 )
-    {
+    while (1) {
         /* Do Nothing! */
     }
 }
-
 
 /**
     @brief The supervisor call interrupt handler
@@ -51,12 +47,10 @@ void __attribute__((interrupt("UNDEF"))) undefined_instruction_vector(void)
 */
 void __attribute__((interrupt("SWI"))) software_interrupt_vector(void)
 {
-    while( 1 )
-    {
+    while (1) {
         /* Do Nothing! */
     }
 }
-
 
 /**
     @brief The prefetch abort interrupt handler
@@ -64,11 +58,7 @@ void __attribute__((interrupt("SWI"))) software_interrupt_vector(void)
     The CPU will start executing this function. Just trap here as a debug
     solution.
 */
-void __attribute__((interrupt("ABORT"))) prefetch_abort_vector(void)
-{
-
-}
-
+void __attribute__((interrupt("ABORT"))) prefetch_abort_vector(void) {}
 
 /**
     @brief The Data Abort interrupt handler
@@ -76,11 +66,7 @@ void __attribute__((interrupt("ABORT"))) prefetch_abort_vector(void)
     The CPU will start executing this function. Just trap here as a debug
     solution.
 */
-void __attribute__((interrupt("ABORT"))) data_abort_vector(void)
-{
-
-}
-
+void __attribute__((interrupt("ABORT"))) data_abort_vector(void) {}
 
 /**
     @brief The IRQ Interrupt handler
@@ -92,15 +78,15 @@ void __attribute__((interrupt("ABORT"))) data_abort_vector(void)
 */
 void __attribute__((interrupt("IRQ"))) interrupt_vector(void)
 {
-	if( RPI_GetArmTimer()->MaskedIRQ ) {
+    if (RPI_GetArmTimer()->MaskedIRQ) {
         /* Clear the ARM Timer interrupt - it's the only interrupt we have
            enabled, so we want don't have to work out which interrupt source
            caused us to interrupt */
         RPI_GetArmTimer()->IRQClear = 1;
+        scheduler();
         ticks++;
     }
 }
-
 
 /**
     @brief The FIQ Interrupt Handler
@@ -127,7 +113,4 @@ void __attribute__((interrupt("IRQ"))) interrupt_vector(void)
     empty because the CPU has switched to a fresh set of registers and so has
     not altered the main set of registers.
 */
-void __attribute__((interrupt("FIQ"))) fast_interrupt_vector(void)
-{
-
-}
+void __attribute__((interrupt("FIQ"))) fast_interrupt_vector(void) {}

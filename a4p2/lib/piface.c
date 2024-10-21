@@ -12,6 +12,7 @@
 #include "piface.h"
 #include "rpi-gpio.h"
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 int cnt;
@@ -266,7 +267,19 @@ void piface_clear(void)
  */
 void piface_set_cursor(uint8_t col, uint8_t row)
 {
-    // to be implemented
+    cnt = col + row * 16;
+    if (row > 0) {
+        if (col > 0)
+            lcd_write_cmd((0x48 | 0x88));
+        else
+            lcd_write_cmd((0x40 | 0x80));
+    } else {
+        if (col > 0)
+            lcd_write_cmd(0x08);
+        else
+            lcd_write_cmd(0x02);
+    }
+    LCD_DELAY;
 }
 
 /** @brief Displays an integer content in a given segment in the PiFace display.
@@ -293,7 +306,14 @@ void piface_set_cursor(uint8_t col, uint8_t row)
  */
 void print_at_seg(int seg, int num)
 {
-    // to be implemented
+    int col = seg % 2 == 0 ? 0 : 8;
+    int row = seg > 1 ? 1 : 0;
+    char str[80] = {'\0'};
+
+    piface_set_cursor(col, row);
+    snprintf(str, 8, "S%i: %d", seg, num);
+    // str[8] = '\0';
+    PUTTOLDC("S%i: %d", seg, num);
 }
 
 /** @brief Similar to print_at_seg, but displays arbitrary content on a given
@@ -304,5 +324,11 @@ void print_at_seg(int seg, int num)
  */
 void printf_at_seg(int seg, const char *fmt, ...)
 {
-    // The implementation is optional.
+    int col = seg % 2 == 0 ? 0 : 8;
+    int row = seg > 1 ? 1 : 0;
+    va_list list;
+
+    va_start(list, fmt);
+    piface_set_cursor(col, row);
+    PUTTOLDC(fmt, list);
 }
