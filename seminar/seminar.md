@@ -94,3 +94,41 @@ Three techniques: hardware-aware NAS, FPGA/DNN co-design and a unified different
     * search algorithm: can greatly influence the efficiency of the search and the effectiveness of the final network architecture. The searchs can be supernet-based and sampling-based
     * network evaluation: is the key for efficient NAS, as fast evaluation is required to estimate the quality of individual networks. It can be prohibitively expensive due to network training, so various approaches have been proposed to expedite the evaluation (few and one-shot training)
 ### HW-aware NAS formulation
+* with the need of deploying power-hungry DNNs into resource constrained devices, hardware-aware NAS seems to be one of the most promising techniques
+    * great amount of work that adopt a specific hardware (CPU, GPU, ...) and requires different hardware-cost metric
+* EDD (Efficient Differentiable DNN) provide more integrated co-optimization solutions by fusing the design space of DNN architecture and hardware accelerator
+* OFA (One For All) proposes an elastic training scheme for the supernet, which allow to directly search high-accuracy architectures by selecting from the OFA network without additionnal training
+### FPGA/DNN co-design
+* the concept of accelerator and DNN co-design was first proposed by Hao and Cheng in «Deep Neural Network Model and FPGA Accelerator Co-design: Opportunities and Challenges»
+* later on, a FPGA/DNN co-design framework was implemented, with a hardware-oriented bottom-up DNN model design (Auto-DNN), and a DNN-driven top-down FPGA accelerator design (Auto-HLS)
+#### The key to co-design: Bundle
+* executing both Auto-DNN and Auto-HLS is made by proposing basic building blocks called *Bundles* that can be used to build both of them
+* a DNN can be constructed by replicating a bundle for a certain number of layers with pooling layers inserted
+* an accelerator may be constructed by building a hardware module for the certain module, and then reusing it for others, which significantly reduces resource usage with resource sharing
+#### Progressively reducing search space
+* selecting an optimal bundle is non trival given the large design space and long DNN training time, so the search space must be narrowed as early as possible
+* filtering out unfavorable bundles at early stage
+* on the first step, some analytical models for the overall DNN resource utilization and latency are made
+* on the second, the bundles are evaluated and selected by being replicated *n* times to build a DNN and train for a small number of epochs. The bundles on the pareto curve (set of efficient solutions) are kept for the next step
+* the third step consists of building a DNN using bundles and training it after selecting the top-n promising bundles candidates. DNN candidates are created and updated for each bundle candidate until the latency target is met, and then perturbated by changing the number of bundle replications, down-sampling configuration between bundles and channel expansion confiuration to find the DNN architecture which meets the performance constraints with the highest accuracy.
+* compared to the 1-st place winner of the FPGA category, there is 6.2% higher IoU (Intersection over Union), 40% lower power and 2.5 times better energy efficiency
+### EDD: Efficient Differential DNN Architecture Search
+* on top of the previous design, EDD is a more generalized and unified approach. EDD is a fully simultaneous, efficient differentiable DNN architecture and implementation co-search methodology
+#### Fused co-design space
+* the key is to fuse the design space of DNN architecture search and hardware implementation search. To carry out both DNN architecture and hardware accelerator co-search, the loss function has to be minimized ($min: L = Acc_{loss}(A, I).PerF_{loss}(I) + \beta . C^{RES(I)-RES_{ub}}$), with $Acc_{loss}$ being the DNN accuracy loss, $Perf_{loss}$ the hardware performance loss, $RES$ the resource utilization and $RES_{ub}$ the resource upper bound.
+* in the search space, each DNN is composed of *N* building blocks, that have *M* candidate operations in every one of them. The outputs of each block is calculated from the outputs of its *M* candidate operation, with the adoption of the Gumbel-Softmax funcion where each operation $op_m^i$ will be sampled for a sampling parameter following the law's distribution which convert discrete non-differenciable sampling to continuous differenciable sampling. They form a complete DNN that can be evaluated for accuracy and implementation performance
+* $A$ is the activation output of layer $I$ that is the input
+* The implementation search space is formed but letting each $op_m^i$ have its own omplementation variables (quantization $q$, accelerator parallelism, loop tiling factor, ...)
+#### Differentiable performance and resource formulation
+* the loss function differenciable has to be formulated with respect to search space $A$ and $I$. By decending this loss function on the validation set, ${A,I}$ can be learned simultaneously
+#### State-of-the-art results
+* the results are demonstrated on a subset of ImageNet dataset randomly sampled from 100 classes, and target 3 hardware architectures that each have a search DNN model (EDD-Net) where a single processing element is reused by all layers. Each model is produced through EDD withing a 12-hour search on a P100 GPU
+* EDD-Net-1 reaches similar or better accuracy comparing with the state-of-the-art DNN models and other NAS while achieving the shortest interference latency
+* EDD-Net-2 delivers the shortest latency on FPGA among all the DNNs
+* EDD-Net-3 achieves higher throughput with a much higher accuracy comparing with the state-of-the-art (40.2 fps vs 27.7 fps for 7.7% and 10.0% top-5 error)
+
+## Conclusion
+* the high computation, memory demand, and diverse application-specific requirements make developping DNN-based AI applications challenging.
+* Efficient machine learning algorithms, accelerator and compiler design, and various co-design and optimization strategies are methods to overcome theses challenges.
+* they believe that embedded AI solutions will involve more effective and comprehensive design methods in the future, as their AI algorithms designs (ELB-NN and VecQ) can adopt more advanced quantization scheme to minimize network compression loss
+* future works will considerate more diverse network architecture and layer-wise data distribution; extend DNNBuilder and PyLog to create framework and tools for hardware design, synthesis and workload compilation for a smoother accelerator design process
