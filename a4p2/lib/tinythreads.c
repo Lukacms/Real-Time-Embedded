@@ -318,6 +318,7 @@ void respawn_periodic_tasks(void)
     } while (block);
     if (to_exec) {
         current->Rel_Period_Deadline = current->Period_Deadline;
+        enqueue(current, &readyQ);
         dispatch(to_exec);
     }
 }

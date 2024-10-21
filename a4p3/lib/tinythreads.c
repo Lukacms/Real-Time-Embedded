@@ -217,6 +217,27 @@ void spawnWithDeadline(void (*function)(int), int arg, unsigned int deadline,
                        unsigned int rel_deadline)
 {
     // To be implemented in Assignment 4!!!
+        thread newp;
+    DISABLE();
+    if (!initialized)
+        initialize();
+    newp = dequeue(&freeQ);
+    newp->function = function;
+    newp->arg = arg;
+    newp->next = NULL;
+    newp->Period_Deadline = deadline;
+    newp->Rel_Period_Deadline = rel_deadline;
+    if (setjmp(newp->context) == 1) {
+        ENABLE();
+        current->function(current->arg);
+        DISABLE();
+        enqueue(current, &free);
+        current = NULL;
+        dispatch(dequeue(&readyQ));
+    }
+    SETSTACK(&newp->context, &newp->stack);
+    enqueue(newp, &readyQ);
+    ENABLE();
 }
 
 /** @brief Sort the elements a given queue container by a given
@@ -226,6 +247,33 @@ void spawnWithDeadline(void (*function)(int), int arg, unsigned int deadline,
 static void sortX(thread *queue)
 {
     // To be implemented in Assignment 4!!!
+    thread a = queue;
+    thread b = queue;
+    thread a_prev = NULL;
+    thread b_prev = NULL;
+    thread aux1;
+    thread aux2;
+
+    for (int i = 0; i < NTHREADS; i++) {
+        for (int j = 0; j < NTHREADS; j++) {
+            if (a->Period_Deadline < b->Period_Deadline) {
+                aux1 = a_prev;
+                aux2 = b_prev;
+                // Fuck pointers
+
+                shift(a, b, a_prev, b_prev);
+
+                a_prev = aux1;
+                b_prev = aux2;
+                a = a_prev->next;
+                b = b_prev->next;
+            }
+            b_prev = b;
+            b = b->next;
+        }
+        a_prev = a;
+        a = a->next;
+    }
 }
 
 /** @brief Removes a specific element from the queue.
@@ -240,7 +288,22 @@ static thread dequeueItem(thread *queue, int idx)
  */
 void respawn_periodic_tasks(void)
 {
-    // To be implemented in Assignment 4!!!
+    thread block = readyQ;
+    thread to_exec = NULL;
+
+    if (!block)
+        return;
+    do {
+        block->Rel_Period_Deadline -= 1;
+        if (!to_exec && block->Rel_Period_Deadline <= 0)
+            to_exec = block;
+        block = block->next;
+    } while (block);
+    if (to_exec) {
+        current->Rel_Period_Deadline = current->Period_Deadline;
+        enqueue(current, &readyQ);
+        dispatch(to_exec);
+    }
 }
 
 /** @brief Schedules tasks using time slicing
@@ -262,6 +325,9 @@ static void scheduler_RM(void)
 static void scheduler_EDF(void)
 {
     // To be implemented in Assignment 4!!!
+    DISABLE();
+    respawn_periodic_tasks();
+    ENABLE();
 }
 
 /** @brief Calls the actual scheduling mechanisms, i.e., Round Robin,
@@ -272,6 +338,7 @@ static void scheduler_EDF(void)
 void scheduler(void)
 {
     // To be implemented in Assignment 4!!!
+    scheduler_EDF();
 }
 
 /** @brief Prints via UART the content of the main variables in TinyThreads
