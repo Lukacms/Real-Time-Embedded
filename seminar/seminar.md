@@ -16,7 +16,7 @@
 * acceleration libraries on CPU
 * kernel optimization on GPU
 * customized accelerators on FPGA & ASICS
-**But** there are some challenges: hardware design process, varification problems, time-consuming design space exploration during DNN deployement
+**But** there are some challenges: hardware design process, varification problems, time-consuming design space exploration during DNN deployment
 
 ### Efficient co-design optimization
 * algorithm / accelerator co-design & co-search to solve the edge AI challenges
@@ -40,7 +40,7 @@ ML requires high inference accuracy, aggressive inference speed, throughput & en
 * by increasing model complexity, they can bring back the accuracy
 #### Hardware accelerator for ELB-NN
 * parameterized computation engine (CE) to handle ELB-NN. It has a flexible support of low bit-width quantization & configurable parallelism during execution
-* to demonstrate hardware efficacity, adopt accelerator with proposed CE & accelerate != quantized versions of Alexnet using embedded plateform named ZC706
+* to demonstrate hardware efficacity, adopt accelerator with proposed CE & accelerate != quantized versions of Alexnet using embedded platform named ZC706
     * ELB-NN can achieve throughput performance up to 10.3 TOPS => outperforms previous designs
 
 ### The VecQ
@@ -61,3 +61,36 @@ Vectorized Quantization => training quantization that is based on a novel quanti
 ## Efficient accelerator design and workload mapping
 Introducing DNNBuilder and PyLog to bridge gap between fast DNN model design & hardware accelerator
 ### DNNBuilder
+End to end automation framework that can tranform DNN designs from deep learning frameworks to highly optimized hardware deployment on FPGAs
+####  End-to-end automation flow
+* DNNBuilder produces DNN accelerators in 3 steps (Design, Generation & Execution)
+    * design: DNN is designed and trained using deep learning framework (employ CPU and GPU). The proposed flow supports hybrid quantization schemes. In this step, the feedback function provides hardware metric estimations, so that users can update their network design if not efficient enough. After training, network definition files and trained parameters are passed to the next step
+    * generation: network parsing is launched to decompose the input models. The different network layers are mapped to the basic building blocks of the generated accelerator; and automated optimization provides confiuration guidlines to achieve maximum performance. Code is then generated for FPGA-based instances
+    * execution: the DNN accelerator is instantiated in FPGA with unified interface, it is then concluded ready for eventual deployment
+#### Architecture novelties
+* To deliver high throughput performance and promising real-time response, a fine-grained layer-based pipeline is used in place of a conventionnal pipeline. It reduces latency (9.92ms vs 411.99ms) while using the same number of layers.
+* To reduce on-chip memory utilization during DNN interference, a column-based cache scheme is used, as it also supports high-definition image input for resource-constrained embedded systems. It can reduce 43 times on-chip memory usage compared to the accelerator without this technology
+#### state-of-the-art performance
+* The designs are demonstrated by accelerating popular AI workloads on an embedded platform, and the DNNBuilder reaches the best performance and power efficiency, even without using batch processing
+
+### PyLog: A python-based FPGA programming flow
+There are problems because of the fast-growing complexity of new applications for computing systems. HLS (High-level Synthesis) can be a solution to spend less time compiling. It compiles design inputs written in high-level languages to hardware descriptions in RTL
+#### PyLog flow overview
+* PyLog is a python-based high level programming flow for FPGAs that presents a unified programming model for host and accelerator logic with consistent python syntax and logic.
+* Most of the code can be interpreted by the standard python interpreter, except for the FPGA kernel function, decorated with `@pylog`, which call the PyLog compiler to compile the kernel function to HLS C code, to be then compiled into efficient FPGA IPs with HLS flow. The rest of the program is interpreted by the standard python interpreter running on CPU, and will become the host program of the accelerator system.
+#### PyLog features
+* high-level operators: allow user to express computation patterns at high level and enable better compiler; some of theses are vector additions, inner product, or even square matric multiplication. Not only simplifying programming for the users, they also pass more information or computation to the compiler compared to c/c++ programming
+* type interference and type checking: not implemented natively, type checking is critical in PyLog since the same operator can have a totally different meaning when applied to different types or shapes. Thanks to the checking, the users don't have to provide explicit types annotations in their programs
+* compiler optimization: that improve the design quality of generated accelerators. PyLog uses its own intermediate representation for the input code that the code analysis and transformation pass through to perform a sequence of optimizations
+#### PyLog evaluation results
+* expressiveness: it needs around 30% of the code length of HLS C; pylog provides good expressiveness compared to HLS C and allow user to describe the computation with fewer lines of code
+* accelerator performance: after using a real-world benchmark to evaluate the performance of the generated accelerators, we see that they achieve around 3.17 times and 1.24 times speedup over CPU baseline and manually optimized accelerators
+
+## Efficient optimizations
+Three techniques: hardware-aware NAS, FPGA/DNN co-design and a unified differentiable co-design approach, accross different platforms
+### Overview of hardware-aware neutral architecture search (NAS)
+* NAS is the automated process of neural architectural design; it produces many state-of-the-art network, and require three components:
+    * search space: includes all possible network architectures that follow a defined template
+    * search algorithm: can greatly influence the efficiency of the search and the effectiveness of the final network architecture. The searchs can be supernet-based and sampling-based
+    * network evaluation: is the key for efficient NAS, as fast evaluation is required to estimate the quality of individual networks. It can be prohibitively expensive due to network training, so various approaches have been proposed to expedite the evaluation (few and one-shot training)
+### HW-aware NAS formulation
