@@ -1,0 +1,3 @@
+# Compilation and Optimizations for Efficient Machine Learning on Embedded Systems
+
+This paper was published the 26th of August 2022, and written by Xiaofan Zhang, Yao Chen, Cong Hao, Sitao Huang, Yuhong Li, and Deming Chen. It focuses on the fact that the development of Deep Neural Networks (DNN) have been made accessible to the public, which makes machine learning more complicated, needing more resources to run, ... And as the evolutions of hardware are much slower than thoses on software, it has become much more complicated to run DNN on hardware today, especially for embedded and real-time services. This paper seeks to find ways to be more efficient for DNN on embedded systems.
