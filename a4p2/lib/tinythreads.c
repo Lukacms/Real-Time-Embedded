@@ -293,7 +293,18 @@ static void sortX(thread *queue)
  */
 static thread dequeueItem(thread *queue, int idx)
 {
-    // You might need it in Assignment 4!!!
+    thread list = *queue;
+
+    for (int i = 0; list && i <= idx; i++) {
+        if (i == idx - 1 && list->next)
+            list->next = list->next->next;
+        if (i == idx) {
+            list->next = NULL;
+            break;
+        }
+        list = list->next;
+    }
+    return list;
 }
 
 /** @brief Periodic tasks have to be activated at a given frequency. Their
@@ -307,14 +318,16 @@ void respawn_periodic_tasks(void)
 {
     thread block = readyQ;
     thread to_exec = NULL;
+    int idx = 0;
 
     if (!block)
         return;
     do {
         block->Rel_Period_Deadline -= 1;
         if (!to_exec && block->Rel_Period_Deadline <= 0)
-            to_exec = block;
+            to_exec = dequeueItem(&readyQ, idx);
         block = block->next;
+        idx++;
     } while (block);
     if (to_exec) {
         current->Rel_Period_Deadline = current->Period_Deadline;
