@@ -122,7 +122,7 @@ Three techniques: hardware-aware NAS, FPGA/DNN co-design and a unified different
 #### Differentiable performance and resource formulation
 * the loss function differenciable has to be formulated with respect to search space $A$ and $I$. By decending this loss function on the validation set, ${A,I}$ can be learned simultaneously
 #### State-of-the-art results
-* the results are demonstrated on a subset of ImageNet dataset randomly sampled from 100 classes, and target 3 hardware architectures that each have a search DNN model (EDD-Net) where a single processing element is reused by all layers. Each model is produced through EDD withing a 12-hour search on a P100 GPU
+* the results are demonstrated on a subset of ImageNet dataset randomly sampled from 100 classes, and target 3 hardware architectures that each have a search DNN model (EDD-Net) where a single processing element is reused by all layers. Each model is produced through EDD within a 12-hour search on a P100 GPU
 * EDD-Net-1 reaches similar or better accuracy comparing with the state-of-the-art DNN models and other NAS while achieving the shortest interference latency
 * EDD-Net-2 delivers the shortest latency on FPGA among all the DNNs
 * EDD-Net-3 achieves higher throughput with a much higher accuracy comparing with the state-of-the-art (40.2 fps vs 27.7 fps for 7.7% and 10.0% top-5 error)
