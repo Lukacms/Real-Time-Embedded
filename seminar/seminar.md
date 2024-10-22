@@ -12,11 +12,11 @@
 * network pruning, to reduce redundancy of DNN structures => benefits come from fully-connected (FC) layers => more sophisticated algorithms are required as time pass for pruning
 
 ### Efficient accelerator design & DNN mapping methods
-* build domain-specific hardware
+* build domain-specific hardware accelerators
 * acceleration libraries on CPU
 * kernel optimization on GPU
 * customized accelerators on FPGA & ASICS
-**But** there are some challenges: hardware design process, varification problems, time-consuming design space exploration during DNN deployment
+**But** there are some challenges: hardware design process, verification problems, time-consuming design space exploration during DNN deployment
 
 ### Efficient co-design optimization
 * algorithm / accelerator co-design & co-search to solve the edge AI challenges
