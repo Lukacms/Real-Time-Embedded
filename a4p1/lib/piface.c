@@ -308,12 +308,12 @@ void print_at_seg(int seg, int num)
 {
     int col = seg % 2 == 0 ? 0 : 8;
     int row = seg > 1 ? 1 : 0;
-    char str[80] = {'\0'};
+    char str[8] = {'\0'};
 
     piface_set_cursor(col, row);
     snprintf(str, 8, "S%i: %d", seg, num);
     // str[8] = '\0';
-    PUTTOLDC("S%i: %d", seg, num);
+    piface_puts(str);
 }
 
 /** @brief Similar to print_at_seg, but displays arbitrary content on a given

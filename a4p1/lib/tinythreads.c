@@ -216,6 +216,7 @@ void unlock(mutex *m)
     // To be implemented in Assignment 4!!!
     DISABLE();
     if (m->waitQ != NULL) {
+        enqueue(current, &readyQ);
         dispatch(dequeue(&m->waitQ));
     } else
         m->locked = 0;
@@ -261,9 +262,7 @@ void respawn_periodic_tasks(void)
  */
 static void scheduler_RR(void)
 {
-    DISABLE();
     yield();
-    ENABLE();
 }
 
 /** @brief Schedules periodic tasks using Rate Monotonic (RM)
@@ -287,7 +286,6 @@ static void scheduler_EDF(void)
  */
 void scheduler(void)
 {
-    printf_at_seg(0, "tututututu");
     scheduler_RR();
 }
 

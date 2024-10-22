@@ -12,7 +12,9 @@
  */
 
 #include "rpi-interrupts.h"
+#include "piface.h"
 #include "rpi-armtimer.h"
+#include "rpi-systimer.h"
 #include "tinythreads.h"
 #include <stdint.h>
 
@@ -83,8 +85,8 @@ void __attribute__((interrupt("IRQ"))) interrupt_vector(void)
            enabled, so we want don't have to work out which interrupt source
            caused us to interrupt */
         RPI_GetArmTimer()->IRQClear = 1;
-        scheduler();
         ticks++;
+        scheduler();
     }
 }
 
