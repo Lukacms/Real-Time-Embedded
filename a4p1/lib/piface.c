@@ -269,15 +269,9 @@ void piface_set_cursor(uint8_t col, uint8_t row)
 {
     cnt = col + row * 16;
     if (row > 0) {
-        if (col > 0)
-            lcd_write_cmd((0x48 | 0x88));
-        else
-            lcd_write_cmd((0x40 | 0x80));
+        lcd_write_cmd(((0x40 + col) | (0x80 + col)));
     } else {
-        if (col > 0)
-            lcd_write_cmd(0x08);
-        else
-            lcd_write_cmd(0x02);
+        lcd_write_cmd(col);
     }
     LCD_DELAY;
 }
