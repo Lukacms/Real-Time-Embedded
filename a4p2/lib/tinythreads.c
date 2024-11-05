@@ -384,7 +384,8 @@ static void scheduler_EDF(void)
  */
 void scheduler(void)
 {
-    printf_at_seg(0, "tutu");
+    /*printf_at_seg(0, "tutu");
+    RPI_WaitMicroSeconds(200000);*/
     scheduler_RM();
 }
 

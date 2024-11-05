@@ -286,6 +286,7 @@ static void scheduler_EDF(void)
  */
 void scheduler(void)
 {
+    print_at_seg(2, 69);
     scheduler_RR();
 }
 

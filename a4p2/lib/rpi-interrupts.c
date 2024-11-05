@@ -84,8 +84,8 @@ void __attribute__((interrupt("IRQ"))) interrupt_vector(void)
            enabled, so we want don't have to work out which interrupt source
            caused us to interrupt */
         RPI_GetArmTimer()->IRQClear = 1;
-        scheduler();
         ticks++;
+        scheduler();
     }
 }
 
