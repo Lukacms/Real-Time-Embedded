@@ -333,25 +333,32 @@ static void schedule_done_functions(void)
  */
 void respawn_periodic_tasks(void)
 {
-    thread block = readyQ;
+    DISABLE();
+    thread block = doneQ;
     thread to_exec = NULL;
+    int idx = 0;
 
-    if (!block)
-        return;
-    current->Rel_Period_Deadline -= 1;
     while (block) {
-        block->Rel_Period_Deadline -= 1;
+        block->Rel_Period_Deadline++;
+        if (block->Rel_Period_Deadline % ticks == 0) {
+            to_exec = dequeueItem(&block, idx);
+            enqueue(to_exec, &readyQ);
+            if (setjmp(to_exec->context) == 1) {
+                ENABLE();
+                current->function(current->arg);
+                DISABLE();
+                enqueue(current, &doneQ);
+                current = NULL;
+                dispatch(dequeue(&readyQ));
+            }
+            block = doneQ;
+            idx = 0;
+            continue;
+        }
         block = block->next;
+        idx++;
     }
-    schedule_done_functions();
-    sortX(&readyQ);
-    printf_at_seg(1, ":)");
-    if (readyQ->Period_Deadline < current->Period_Deadline) {
-        to_exec = dequeue(&readyQ);
-        current->Rel_Period_Deadline = current->Period_Deadline;
-        enqueue(current, &readyQ);
-        dispatch(to_exec);
-    }
+    ENABLE();
 }
 
 /** @brief Schedules tasks using time slicing
@@ -365,9 +372,11 @@ static void scheduler_RR(void)
  */
 static void scheduler_RM(void)
 {
-    DISABLE();
     respawn_periodic_tasks();
-    ENABLE();
+    if (++current->Rel_Period_Deadline % ticks == 0) {
+        sortX(&readyQ);
+        yield();
+    }
 }
 
 /** @brief Schedules periodic tasks using Earliest Deadline First  (EDF)

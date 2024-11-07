@@ -10,7 +10,14 @@ EXTERN (Default_Handler)
 ENTRY  (Entry)
 
 SECTIONS {
-	/* main code */
+    /* NOTE: comment the following lines if .img not doing anything */
+    .ARM.exidx : {
+          __exidx_start = .;
+          *(.ARM.exidx*)
+          __exidx_end = .;
+    }
+
+    /* main code */
 	. = 0x8000;
 	.text : {
 		*(.startup)

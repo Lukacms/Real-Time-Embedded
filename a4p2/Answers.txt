@@ -1,0 +1,2 @@
+Answer:
+  if we delete `while(t == ticks);`, the code won't have a fixed length execution of x ticks

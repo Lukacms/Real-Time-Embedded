@@ -141,11 +141,16 @@ static thread dequeue(thread *queue)
  */
 static void dispatch(thread next)
 {
-    if (next != NULL) {
+    if (!next)
+        return;
+    if (current) {
         if (setjmp(current->context) == 0) {
             current = next;
             longjmp(next->context, 1);
         }
+    } else {
+        current = next;
+        longjmp(next->context, 1);
     }
 }
 
@@ -168,7 +173,7 @@ void spawn(void (*function)(int), int arg)
         ENABLE();
         current->function(current->arg);
         DISABLE();
-        enqueue(current, &free);
+        enqueue(current, &freeQ);
         current = NULL;
         dispatch(dequeue(&readyQ));
     }
@@ -197,7 +202,14 @@ void yield(void)
  */
 void lock(mutex *m)
 {
-    // To be implemented in Assignment 4!!!
+    DISABLE();
+    if (!m->locked)
+        m->locked = 1;
+    else {
+        enqueue(current, &m->waitQ);
+        dispatch(dequeue(&readyQ));
+    }
+    ENABLE();
 }
 
 /** @brief Activate a thread in the waiting queue of the mutex if it is
@@ -205,7 +217,13 @@ void lock(mutex *m)
  */
 void unlock(mutex *m)
 {
-    // To be implemented in Assignment 4!!!
+    DISABLE();
+    if (m->waitQ != NULL) {
+        enqueue(current, &readyQ);
+        dispatch(dequeue(&m->waitQ));
+    } else
+        m->locked = 0;
+    ENABLE();
 }
 
 /** @brief Creates an thread block instance and assign to it an start routine,
@@ -231,7 +249,7 @@ void spawnWithDeadline(void (*function)(int), int arg, unsigned int deadline,
         ENABLE();
         current->function(current->arg);
         DISABLE();
-        enqueue(current, &free);
+        enqueue(current, &doneQ);
         current = NULL;
         dispatch(dequeue(&readyQ));
     }
@@ -313,47 +331,61 @@ static thread dequeueItem(thread *queue, int idx)
  */
 void respawn_periodic_tasks(void)
 {
-    thread block = readyQ;
+    DISABLE();
+    thread block = doneQ;
     thread to_exec = NULL;
     int idx = 0;
 
-    if (!block)
-        return;
-    do {
-        block->Rel_Period_Deadline -= 1;
-        if (!to_exec && block->Rel_Period_Deadline <= 0)
-            to_exec = dequeueItem(&readyQ, idx);
+    while (block) {
+        block->Rel_Period_Deadline++;
+        if (block->Rel_Period_Deadline % ticks == 0) {
+            to_exec = dequeueItem(&block, idx);
+            enqueue(to_exec, &readyQ);
+            if (setjmp(to_exec->context) == 1) {
+                ENABLE();
+                current->function(current->arg);
+                DISABLE();
+                enqueue(current, &doneQ);
+                current = NULL;
+                dispatch(dequeue(&readyQ));
+            }
+            block = doneQ;
+            idx = 0;
+            continue;
+        }
         block = block->next;
         idx++;
-    } while (block);
-    if (to_exec) {
-        current->Rel_Period_Deadline = current->Period_Deadline;
-        enqueue(current, &readyQ);
-        dispatch(to_exec);
     }
+    ENABLE();
 }
 
 /** @brief Schedules tasks using time slicing
  */
 static void scheduler_RR(void)
 {
-    // To be implemented in Assignment 4!!!
+    yield();
 }
 
 /** @brief Schedules periodic tasks using Rate Monotonic (RM)
  */
 static void scheduler_RM(void)
 {
-    // To be implemented in Assignment 4!!!
+    respawn_periodic_tasks();
+    if (++current->Rel_Period_Deadline % ticks == 0) {
+        sortX(&readyQ);
+        yield();
+    }
 }
 
 /** @brief Schedules periodic tasks using Earliest Deadline First  (EDF)
  */
 static void scheduler_EDF(void)
 {
-    DISABLE();
     respawn_periodic_tasks();
-    ENABLE();
+    if (++current->Rel_Period_Deadline % ticks == 0) {
+        sortX(&readyQ);
+        yield();
+    }
 }
 
 /** @brief Calls the actual scheduling mechanisms, i.e., Round Robin,
@@ -363,7 +395,6 @@ static void scheduler_EDF(void)
  */
 void scheduler(void)
 {
-    // To be implemented in Assignment 4!!!
     scheduler_EDF();
 }
 

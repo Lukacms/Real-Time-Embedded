@@ -86,7 +86,6 @@ void __attribute__((interrupt("IRQ"))) interrupt_vector(void)
            caused us to interrupt */
         RPI_GetArmTimer()->IRQClear = 1;
         ticks++;
-        RPI_GetArmTimer()->Value = 0xF3C;
         scheduler();
     }
 }
