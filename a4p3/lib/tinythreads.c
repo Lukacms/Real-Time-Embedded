@@ -276,6 +276,7 @@ static void shift(thread *a, thread *b, thread *a_prev, thread *b_prev)
  */
 static void sortX(thread *queue)
 {
+    DISABLE();
     thread a = *queue;
     thread b = *queue;
     thread a_prev = NULL;
@@ -302,6 +303,7 @@ static void sortX(thread *queue)
         a_prev = a;
         a = a->next;
     }
+    DISABLE();
 }
 
 /** @brief Removes a specific element from the queue.
