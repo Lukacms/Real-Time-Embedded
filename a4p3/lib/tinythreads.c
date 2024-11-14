@@ -303,7 +303,7 @@ static void sortX(thread *queue)
         a_prev = a;
         a = a->next;
     }
-    DISABLE();
+    ENABLE();
 }
 
 /** @brief Removes a specific element from the queue.
@@ -339,7 +339,7 @@ void respawn_periodic_tasks(void)
     int idx = 0;
 
     while (block) {
-        if (ticks % block->Rel_Period_Deadline == 0) {
+        if (ticks % block->Period_Deadline == 0) {
             to_exec = dequeueItem(&block, idx);
             to_exec->Rel_Period_Deadline = to_exec->Period_Deadline;
             enqueue(to_exec, &readyQ);
