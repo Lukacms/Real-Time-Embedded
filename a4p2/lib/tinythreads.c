@@ -258,6 +258,7 @@ static void shift(thread *a, thread *b, thread *a_prev, thread *b_prev)
  */
 static void sortX(thread *queue)
 {
+    DISABLE();
     thread a = *queue;
     thread b = *queue;
     thread a_prev = NULL;
@@ -285,6 +286,7 @@ static void sortX(thread *queue)
         a_prev = a;
         a = a->next;
     }
+    ENABLE();
 }
 
 /** @brief Removes a specific element from the queue.
@@ -331,7 +333,7 @@ static void schedule_done_functions(void)
  * (called every tick) until it needs its deadline is at 0
  * NOTE assumes that it's called every tick
  */
-void respawn_periodic_tasks(void)
+/*void respawn_periodic_tasks(void)
 {
     DISABLE();
     thread block = doneQ;
@@ -359,6 +361,45 @@ void respawn_periodic_tasks(void)
         idx++;
     }
     ENABLE();
+}*/
+
+void time_pass() {
+    DISABLE();
+    thread i = readyQ;
+    while (i) {
+        i->Rel_Period_Deadline--;
+    }
+    ENABLE();
+}
+
+void respawn_periodic_tasks(void)
+{
+    DISABLE();
+    thread block = doneQ;
+    thread to_exec = NULL;
+    int idx = 0;
+
+    while (block) {
+        if (ticks % block->Period_Deadline == 0) {
+            to_exec = dequeueItem(&block, idx);
+            to_exec->Rel_Period_Deadline = to_exec->Period_Deadline;
+            enqueue(to_exec, &readyQ);
+            if (setjmp(to_exec->context) == 1) {
+                ENABLE();
+                current->function(current->arg);
+                DISABLE();
+                enqueue(current, &doneQ);
+                current = NULL;
+                dispatch(dequeue(&readyQ));
+            }
+            block = doneQ;
+            idx = 0;
+            continue;
+        }
+        block = block->next;
+        idx++;
+    }
+    ENABLE();
 }
 
 /** @brief Schedules tasks using time slicing
@@ -366,6 +407,7 @@ void respawn_periodic_tasks(void)
 static void scheduler_RR(void)
 {
     // To be implemented in Assignment 4!!!
+    yield();
 }
 
 /** @brief Schedules periodic tasks using Rate Monotonic (RM)
@@ -373,8 +415,9 @@ static void scheduler_RR(void)
 static void scheduler_RM(void)
 {
     respawn_periodic_tasks();
-    if (++current->Rel_Period_Deadline % ticks == 0) {
-        sortX(&readyQ);
+    time_pass();
+    sortX(&readyQ);
+    if (current->Period_Deadline > readyQ->Period_Deadline) {
         yield();
     }
 }
@@ -393,8 +436,8 @@ static void scheduler_EDF(void)
  */
 void scheduler(void)
 {
-    /*printf_at_seg(0, "tutu");
-    RPI_WaitMicroSeconds(200000);*/
+    printf_at_seg(0, "tutu");
+    RPI_WaitMicroSeconds(200000);
     scheduler_RM();
 }
 

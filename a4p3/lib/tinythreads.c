@@ -337,9 +337,9 @@ void respawn_periodic_tasks(void)
     int idx = 0;
 
     while (block) {
-        block->Rel_Period_Deadline++;
-        if (block->Rel_Period_Deadline % ticks == 0) {
+        if (ticks % block->Rel_Period_Deadline == 0) {
             to_exec = dequeueItem(&block, idx);
+            to_exec->Rel_Period_Deadline = to_exec->Period_Deadline;
             enqueue(to_exec, &readyQ);
             if (setjmp(to_exec->context) == 1) {
                 ENABLE();
@@ -359,6 +359,15 @@ void respawn_periodic_tasks(void)
     ENABLE();
 }
 
+void time_pass() {
+    DISABLE();
+    thread i = readyQ;
+    while (i) {
+        i->Rel_Period_Deadline--;
+    }
+    ENABLE();
+}
+
 /** @brief Schedules tasks using time slicing
  */
 static void scheduler_RR(void)
@@ -371,8 +380,9 @@ static void scheduler_RR(void)
 static void scheduler_RM(void)
 {
     respawn_periodic_tasks();
-    if (++current->Rel_Period_Deadline % ticks == 0) {
-        sortX(&readyQ);
+    time_pass();
+    sortX(&readyQ);
+    if (current->Period_Deadline % ticks == 0) {
         yield();
     }
 }
@@ -382,8 +392,9 @@ static void scheduler_RM(void)
 static void scheduler_EDF(void)
 {
     respawn_periodic_tasks();
-    if (++current->Rel_Period_Deadline % ticks == 0) {
-        sortX(&readyQ);
+    time_pass();
+    sortX(&readyQ);
+    if (current->Rel_Period_Deadline > readyQ->Rel_Period_Deadline) {
         yield();
     }
 }
